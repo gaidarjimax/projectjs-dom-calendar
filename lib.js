@@ -1,104 +1,102 @@
-var get = ( selector ) => { 
-
-    if( ! ( typeof selector === 'string' || selector instanceof String ) ){
-        return;
+class lib  {
+    constructor( selector ){
+       this.curEl = this.get( selector );
     }
 
-    if( selector[0] === '#' ){
-        return document.querySelector( selector );
+    get = ( selector ) => { 
+
+        if( ! ( typeof selector === 'string' || selector instanceof String ) ){
+            return window;
+        }
+
+        return selector[0] === '#' ? document.querySelector( selector )
+                                   : Array.from( document.querySelectorAll( selector ) );
+
     }
 
-    return Array.from( document.querySelectorAll( selector ) );
-}
-
-var remove = ( target ) => {
-    var el = get( target );
-    Array.isArray( el ) ? el.map( i => i.remove() ) : el.remove();
-}
-
-var createElement = ( tagName, props ) => 
-{
-    return setAttrsToElement( document.createElement( tagName ), props);
-}
-
-var appendToElement = ( target, tagName, props ) => {
-    var el = ( target instanceof Node || target instanceof HTMLElement ) ? target 
-                                                                         : get( target );
-
-    if( tagName == undefined || tagName == null ){
-        console.log( 'TagName invalid' );
-        return;
+    remove = () => {
+        Array.isArray( this.curEl ) ? this.curEl.map( i => i.remove() ) 
+                                    : this.curEl.remove();
+        this.curEl = null;
     }
 
-    Array.isArray( el ) ? el.map( i =>  appendToElement( i, tagName, props ) )
-                        : el.appendChild( createElement( tagName, props ) );
-}
+    create = ( tagName, props ) => {
+        if( tagName == undefined || tagName == null ){
+            console.log( 'TagName invalid' );
+            return;
+        }
 
-var modify = ( target, props ) => {
-    var el = ( target instanceof Node || target instanceof HTMLElement ) ? target 
-                                                                         : get( target );
-    Array.isArray( el ) ? el.map( i =>  modify( i, props ) ) 
-                        : setAttrsToElement( el, props);  
-    return el;
-}
-var modifyStyles = ( target, props ) => {
-    var el;
-    if( target instanceof HTMLCollection ){
-        el = Array.from( target );
+        var createElement = ( tagName, props ) => {
+            var el = document.createElement( tagName );
+            this.setAttrsToElement( el, props);
+            return el;
+        }
+        this.curEl = Array.isArray( this.curEl ) ? this.curEl.map( i => i.appendChild( createElement( tagName, props ) ) )
+                                                 : this.curEl.appendChild( createElement(tagName, props ) )
+        return this;
     }
-    else if( Array.isArray(target) ){
-        for( var item in target ){
-            if( ! ( item instanceof HTMLElement || item instanceof Node ) ) {
-                console.log( 'Array passed is not an Array of DOM Elements.' );
+
+    modify = ( props ) => {
+        Array.isArray( this.curEl ) ? this.curEl.map( i =>  setAttrsToElement( i, props ) ) 
+                                    : setAttrsToElement( this.curEl, props);  
+        return this;
+    }
+
+    modifyStyles = ( props ) => {
+        var setStylesToElement = ( target, props )=>{
+
+            if(!(target instanceof Node || target instanceof HTMLElement)){
+                console.log('target is not an DOM element');
                 return;
             }
+            for( var key in props ){
+                target.style[ key ] = props[ key ];
+            }
+            
+            return target;
         }
-    }
-    else if( target instanceof Node || target instanceof HTMLElement ){
-        el = target;
-    }
-    else {
-        el = get( target );
-    }
-    // var el = ( target instanceof Node || target instanceof HTMLElement ) ? target 
-    //                                                                      : get( target );
-    Array.isArray( el ) ? el.map( i =>  modifyStyles( i, props ) ) 
-                        : setStylesToElement( el, props);  
-    return el;
-}
 
-var setAttrsToElement =( target, props )=>{
+        Array.isArray( this.curEl ) ? this.curEl.map( i =>  setStylesToElement( i, props ) ) 
+                                    : setStylesToElement( this.curEl, props);  
+        return this;
+    }
+    parrent = () =>{
+        this.curEl = Array.isArray( this.curEl ) ? this.curEl.map( i => i.parentElement )
+                                                 : document.getParrent( this.curEl );
+        return this;
+    }
+    nextSibling = () =>{
+        this.curEl = Array.isArray( this.curEl ) ? this.curEl.map( i => i.nextSibling )
+                                                 : this.curEl.nextSibling;
+        return this;
+    }
+    prevSibling = () =>{
+        this.curEl = Array.isArray( this.curEl ) ? this.curEl.map( i => i.previousSibling )
+                                                 : this.curEl.previousSibling;
+        return this;
+    }
+    children = () =>{
+        this.curEl = Array.isArray( this.curEl ) ? this.curEl.map( i => i.children )
+                                                 : this.curEl.children;
+        return this;
+    }
 
-    if(!(target instanceof Node || target instanceof HTMLElement)){
-        console.log('target is not an DOM element');
-        return;
-    }
-    for( var key in props ){
-        if (key =='innerText'){
-            target.innerText = props[key]; 
-            continue;
-        }
-        else if (key =='innerHTML'){
-            target.innerHTML = props[key]; 
-            continue;
-        }
-        target.setAttribute( key, props[key] )
-    }
     
-    return target;
-}
-var setStylesToElement =( target, props )=>{
+    setEventHandlers = ( props ) =>{
+        var setEvHandlerForTarget = ( target, props ) =>{
+            for( var key in props ){
+                target[ key ] = props[ key ]
+            }
+        }
 
-    if(!(target instanceof Node || target instanceof HTMLElement)){
-        console.log('target is not an DOM element');
-        return;
+        Array.isArray( this.curEl ) ? this.curEl.map( i => setEvHandlerForTarget( i, props ) )
+                                    : setEvHandlerForTarget( this.curEl, props );
+        return this;
     }
-    for( var key in props ){
-        target.style[ key ] = props[ key ];
-    }
-    
-    return target;
 }
-//(()=>{
-//    doc ready
-//})();
+
+const $ = ( selector ) => { return new lib( selector ) };
+
+// (()=>{
+
+// })();
