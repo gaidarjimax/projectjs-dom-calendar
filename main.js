@@ -1,3 +1,4 @@
+
 $( 'body' ).create( 'h1', { id : 'currYear' } );
 
 new Calendar( 2065, 5, '#main-container' );
@@ -23,7 +24,7 @@ recreateCalendar = ( year, month ) => {
         currYear++;
     }
 
-    $( '#currYear' ).modify( { innerHTML : currYear } )
+    $( '#currYear' ).modify( { innerHTML : currYear } );
 
     $( '#main-container' ).children().remove();
     new Calendar( currYear, currMonth, '#main-container' );

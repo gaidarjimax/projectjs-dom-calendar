@@ -29,8 +29,8 @@ class lib  {
     }
 
     modify = ( props ) => {
-        Array.isArray( this.curEl ) ? this.curEl.map( i =>  setAttrsToElement( i, props ) ) 
-                                    : setAttrsToElement( this.curEl, props);  
+        Array.isArray( this.curEl ) ? this.curEl.map( i =>  this.setAttrsToElement( i, props ) ) 
+                                    : this.setAttrsToElement( this.curEl, props);  
         return this;
     }
 
