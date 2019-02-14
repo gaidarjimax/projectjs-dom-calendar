@@ -39,10 +39,9 @@ daysInMonth = [
     31
 ];
 
-// this is the current date
-cal_current_date = new Date();
 
 function Calendar( year, month, parent ) {
+    cal_current_date = new Date();
     this.month = (isNaN(month) || month == null) ? cal_current_date.getMonth() : month;
     this.year = (isNaN(year) || year == null) ? cal_current_date.getFullYear() : year;
     this.generate( parent );

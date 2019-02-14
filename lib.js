@@ -53,7 +53,7 @@ class lib  {
         return this;
     }
 
-    setEventHandlers = ( props ) =>{
+    setEventHandler = ( props ) =>{
         var setEvHandlerForTarget = ( target, props ) =>{
             for( var key in props ){
                 target[ key ] = props[ key ]
@@ -71,18 +71,29 @@ class lib  {
         return this;
     }
     nextSibling = () =>{
-        this.curEl = Array.isArray( this.curEl ) ? this.curEl.map( i => i.nextSibling )
+        this.curEl = Array.isArray( this.curEl ) ? this.curEl.map( i => i.nextSibling  )
                                                  : this.curEl.nextSibling;
         return this;
     }
     prevSibling = () =>{
-        this.curEl = Array.isArray( this.curEl ) ? this.curEl.map( i => i.previousSibling )
+        this.curEl = Array.isArray( this.curEl ) ? this.curEl.map( i =>  i.previousSibling )
                                                  : this.curEl.previousSibling;
         return this;
     }
     children = () =>{
-        this.curEl = Array.isArray( this.curEl ) ? this.curEl.map( i => i.children )
-                                                 : this.curEl.children;
+
+        var toOneDimArr = ( twoDimArr ) => {
+            var arr = [];
+            for( var i = 0; i < twoDimArr.length; ++i ){
+                for( var j = 0; j < twoDimArr[i].length; ++j){
+                    arr.push( twoDimArr[i][j] );
+                }
+            }
+            return arr;
+        }
+
+        this.curEl = Array.isArray( this.curEl ) ? toOneDimArr( this.curEl.map( i => Array.from( i.children ) ) )
+                                                 : Array.from( this.curEl.children );
         return this;
     }
 
